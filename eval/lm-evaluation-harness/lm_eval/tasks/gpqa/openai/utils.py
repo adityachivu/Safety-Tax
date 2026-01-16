@@ -6,8 +6,13 @@ import random
 import re
 
 import datasets
-import openai
-from openai import OpenAI
+
+from lm_eval.tasks._extraction_utils import (
+    get_extraction_sampler,
+    last_boxed_only_string,
+    remove_boxed,
+    ANSWER_PATTERN,
+)
 
 QUERY_TEMPLATE = "{Question}\n\nA) {choice1}\nB) {choice2}\nC) {choice3}\nD) {choice4}"
 QUERY_TEMPLATE_API = "{Question}\nAnswer Choices:\n(A) {choice1}\n(B) {choice2}\n(C) {choice3}\n(D) {choice4}"
@@ -23,18 +28,17 @@ elif os.getenv("PROMPTSTEP") is not None:
 
 print("QUERY_TEMPLATE: ", QUERY_TEMPLATE)
 
-# Adapted from https://github.com/openai/simple-evals/blob/c0dba4c7bfbc17f786aec7bd7c3585a36ad81f23/common.py#L23
-# (?i): Enables case-insensitive matching. This means "Answer", "answer", "ANSWER", etc., will all be matched.
-# Answer: Matches the literal string "Answer" (case-insensitive due to (?i)).
-# \s*: Matches zero or more whitespace characters (spaces, tabs, etc.) after "Answer". This accounts for cases where there might or might not be space between "Answer" and the colon (:).
-# :: Matches the literal colon character :.
-# \s*: Matches zero or more whitespace characters after the colon. This handles cases where there might be spaces between the colon and the actual answer.
-# (.*): The .* matches zero or more of any character (including none), except for newlines unless re.DOTALL is used (which allows newlines to be matched too).
-# Note: This does not match e.g. "**Final Answer:** A" as it only matches "Answer: A" or "Answer: A) 7" etc.
-ANSWER_PATTERN = r"(?i)Answer\s*:\s*(.*)"
+# ANSWER_PATTERN moved to _extraction_utils.py
 
 EXTRACTION_TEMPLATE = r"""
 Look at the following question and an attempt by a student and extract which choice among A, B, C, D the student picked. If the student did not pick any choice, respond with "-1".
+
+IMPORTANT: The student's FINAL answer is what matters. Look especially at:
+- The END of the response for conclusions
+- Phrases like "So answer X", "Thus X", "Therefore X", "Hence X"
+- "The answer is X" or "correct answer is X"
+- Boxed answers like \boxed{X}
+- If the student repeats their answer multiple times, that IS their answer
 
 Examples:
 
@@ -72,12 +76,31 @@ C
 
 C
 
+    Question: ...
+    Attempt: ...calculations...So answer D. ...more text...So answer D.
+
+D
+
+    Question: ...
+    Attempt: ...Thus the correct choice is **B) some text**...
+
+B
+
+    Question: ...
+    Attempt: ...Hence, C is correct...
+
+C
+
+    Question: ...
+    Attempt: ...Therefore A...Therefore A...Therefore A...
+
+A
+
 ---
 
 YOUR TASK
 
-
-Respond only with the capitalized alphabetic letter (without quotes) or -1. Do not include a rationale.
+Read the ENTIRE attempt carefully, paying special attention to the FINAL conclusion. Respond only with the capitalized alphabetic letter (without quotes) or -1. Do not include a rationale.
 
     Question: %(expression1)s
     Attempt: %(expression2)s
@@ -88,70 +111,7 @@ def extract_answer(sampler, question: str, attempt: str):
    response = sampler([dict(content=prompt, role="user")])
    return response
 
-class ChatCompletionSampler:
-    """
-    Sample from OpenAI's chat completion API
-    """
-
-    def __init__(
-        self,
-        model: str = "gpt-4o-mini",
-        system_message: str | None = None,
-        temperature: float = 0.5,
-        max_tokens: int = 1024,
-    ):
-        self.api_key_name = "OPENAI_API_KEY"
-        self.client = OpenAI()
-        # using api_key=os.environ.get("OPENAI_API_KEY")  # please set your API_KEY
-        self.model = model
-        self.system_message = system_message
-        self.temperature = temperature
-        self.max_tokens = max_tokens
-        self.image_format = "url"
-
-    def _handle_image(
-        self, image: str, encoding: str = "base64", format: str = "png", fovea: int = 768
-    ):
-        new_image = {
-            "type": "image_url",
-            "image_url": {
-                "url": f"data:image/{format};{encoding},{image}",
-            },
-        }
-        return new_image
-
-    def _handle_text(self, text: str):
-        return {"type": "text", "text": text}
-
-    def _pack_message(self, role: str, content):
-        return {"role": str(role), "content": content}
-
-    def __call__(self, message_list) -> str:
-        if self.system_message:
-            message_list = [self._pack_message("system", self.system_message)] + message_list
-        trial = 0
-        while True:
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=message_list,
-                    temperature=self.temperature,
-                    max_tokens=self.max_tokens,
-                )
-                return response.choices[0].message.content
-            # NOTE: BadRequestError is triggered once for MMMU, please uncomment if you are reruning MMMU
-            except openai.BadRequestError as e:
-                print("Bad Request Error", e)
-                return ""
-            except Exception as e:
-                exception_backoff = 2**trial  # expontial back off
-                print(
-                    f"Rate limit exception so wait and retry {trial} after {exception_backoff} sec",
-                    e,
-                )
-                time.sleep(exception_backoff)
-                trial += 1
-            # unknown error shall throw exception
+# ChatCompletionSampler moved to _extraction_utils.py
 
 def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
     metrics = {"exact_match": None, "extracted_answers": []}
@@ -167,12 +127,12 @@ def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
             **{f"maj@{n}": -1 for n in n_res_list},
         }
 
-    if os.getenv("PROCESSOR", "") == "gpt-4o-mini":
-        sampler = ChatCompletionSampler(model="gpt-4o-mini")
+    sampler = get_extraction_sampler()
+    if sampler is not None:
         question = QUERY_TEMPLATE_API.format(Question=doc["Question"], choice1=doc["choice1"], choice2=doc["choice2"], choice3=doc["choice3"], choice4=doc["choice4"])
     else:
-        print(f"Unknown processor: {os.getenv('PROCESSOR')}; set 'PROCESSOR=gpt-4o-mini' and 'OPENAI_API_KEY=YOUR_KEY' for best results.")
-        sampler = None
+        print("No extraction sampler configured. Set EXTRACTION_ENDPOINT or PROCESSOR=gpt-4o-mini for best results.")
+        question = None
 
     split_tokens = ["<|im_start|>answer\n", "<|im_start|>"]
     for i, a in enumerate(results, start=1):
@@ -183,8 +143,13 @@ def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
             if "\n" in a:
                 a = "\n".join(a.split("\n")[1:])
 
+        if a is None:
+            a = ""
+        
         if (box := last_boxed_only_string(a)) is not None:
-            a = remove_boxed(box)
+            extracted = remove_boxed(box)
+            if extracted is not None:
+                a = extracted
         # re.DOTALL is key such that newlines are included e.g. if it does `Answer: Here is the solution:\n\n10`
         elif (matches := re.findall(ANSWER_PATTERN, a, re.DOTALL)) != []:
             a = matches[-1]  # Get the last match
@@ -194,7 +159,9 @@ def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
 
         if a not in ["A", "B", "C", "D"]:
             if sampler is not None:
-                a = extract_answer(sampler, question, a)
+                extracted = extract_answer(sampler, question, a)
+                if extracted is not None:
+                    a = extracted.strip()
             else:
                 pass # TODO: Maybe add back legacy processing
 
@@ -214,9 +181,12 @@ def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
             metrics["exact_matches"].append(a)
             if i in n_res_list:
                 metrics[f"cov@{i}"] = int(1 in metrics["exact_matches"])
-                metrics[f"maj@{i}"] = int(doc["answer"] == Counter(metrics["extracted_answers"]).most_common(1)[0][0])
+                most_common = Counter(metrics["extracted_answers"]).most_common(1)
+                metrics[f"maj@{i}"] = int(doc["answer"] == most_common[0][0]) if most_common else 0
 
     return metrics
+
+# last_boxed_only_string and remove_boxed moved to _extraction_utils.py
 
 def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
     def _process_doc(doc):
@@ -240,48 +210,6 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
         return out_doc
 
     return dataset.map(_process_doc)
-
-def last_boxed_only_string(string: str) -> Optional[str]:
-    idx = string.rfind("\\boxed")
-    if "\\boxed " in string:
-        return "\\boxed " + string.split("\\boxed ")[-1].split("$")[0]
-    if idx < 0:
-        idx = string.rfind("\\fbox")
-        if idx < 0:
-            return None
-
-    i = idx
-    right_brace_idx = None
-    num_left_braces_open = 0
-    while i < len(string):
-        if string[i] == "{":
-            num_left_braces_open += 1
-        if string[i] == "}":
-            num_left_braces_open -= 1
-            if num_left_braces_open == 0:
-                right_brace_idx = i
-                break
-        i += 1
-
-    if right_brace_idx is None:
-        retval = None
-    else:
-        retval = string[idx : right_brace_idx + 1]
-
-    return retval
-
-def remove_boxed(s: str) -> str:
-    if "\\boxed " in s:
-        left = "\\boxed "
-        assert s[: len(left)] == left
-        return s[len(left) :]
-
-    left = "\\boxed{"
-
-    assert s[: len(left)] == left
-    assert s[-1] == "}"
-
-    return s[len(left) : -1]
 
 def doc_to_text_gpqa(doc: dict) -> str:
     return QUERY_TEMPLATE.format(Question=doc["Question"], choice1=doc["choice1"], choice2=doc["choice2"], choice3=doc["choice3"], choice4=doc["choice4"])

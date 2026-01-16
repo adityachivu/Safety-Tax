@@ -8,6 +8,7 @@ Usage:
 """
 
 import argparse
+import os
 import subprocess
 import sys
 
@@ -51,6 +52,12 @@ def main():
         type=int,
         default=2048,
         help="Max tokens for generation (default: 2048)",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.0,
+        help="Sampling temperature (default: 0.0 for greedy decoding)",
     )
     parser.add_argument(
         "--no_chat_template",
@@ -97,12 +104,18 @@ def main():
     if args.limit:
         cmd.extend(["--limit", args.limit])
 
-    cmd.extend(["--gen_kwargs", f"max_tokens={args.max_tokens}"])
+    # Build generation kwargs with max_tokens and temperature
+    gen_kwargs = f"max_tokens={args.max_tokens},temperature={args.temperature}"
+    cmd.extend(["--gen_kwargs", gen_kwargs])
 
     print(f"Running: {' '.join(cmd)}")
     
+    # Set EXTRACTION_ENDPOINT for answer extraction in MATH/GPQA/AIME tasks
+    env = os.environ.copy()
+    env["EXTRACTION_ENDPOINT"] = args.endpoint.rstrip("/")
+    
     # Execute lm_eval
-    result = subprocess.run(cmd)
+    result = subprocess.run(cmd, env=env)
     sys.exit(result.returncode)
 
 
