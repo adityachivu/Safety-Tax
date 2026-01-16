@@ -112,7 +112,8 @@ def main():
     
     # Set EXTRACTION_ENDPOINT for answer extraction in MATH/GPQA/AIME tasks
     env = os.environ.copy()
-    env["EXTRACTION_ENDPOINT"] = args.endpoint.rstrip("/")
+    env["EXTRACTION_ENDPOINT"] = "https://modal-labs-civicmachines--vllm-inference-server-gpt-oss--ef9824.modal.run/".rstrip("/")
+    # HARDCODING THE ENDPOINT FOR NOW, to standardise the extraction endpoint for all models
     
     # Execute lm_eval
     result = subprocess.run(cmd, env=env)

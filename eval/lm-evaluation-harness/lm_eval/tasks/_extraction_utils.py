@@ -43,7 +43,7 @@ class ChatCompletionSampler:
             base_url = endpoint.rstrip("/") + "/v1"
             self.client = OpenAI(base_url=base_url, api_key="EMPTY")
             # Use provided model or default to the standard model
-            self.model = model or os.getenv("EXTRACTION_MODEL", "ArliAI/gpt-oss-20b-Derestricted")
+            self.model = model or os.getenv("EXTRACTION_MODEL", "openai/gpt-oss-20b")
         
         self.system_message = system_message
         self.temperature = temperature
