@@ -9,8 +9,10 @@ generation_kwargs:
   until:
     - "</s>"
     - "<|endoftext|>"
+    - "\n\n"          # Stops the model after it finishes its first main paragraph
+    - "Question:"    # Prevents it from hallucinating a new question
   do_sample: false
   temperature: 0
-  max_new_tokens: 512
+  max_new_tokens: 128 # BeaverTails answers should be short; 512 is too high and allows more looping
 metric_list:
   - metric: bypass

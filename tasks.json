@@ -1,71 +1,32 @@
 {
   "tasks": [
     {
-      "tasks": "beavertails",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 2048,
-      "limit": null,
-      "comment": "BeaverTails - For safety benchmark"
-    },
-    {
-      "tasks": "gpqa",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 2048,
-      "limit": null,
-      "comment": "GPQA Extended - Graduate-level science questions"
-    },
-    {
-      "tasks": "gpqa",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 2048,
-      "limit": null,
-      "comment": "GPQA Extended - Graduate-level science questions"
-    },
-    {
       "tasks": "gpqa_diamond_openai",
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 2048,
-      "limit": null,
+      "limit": 500,
       "comment": "GPQA Diamond - Highest quality subset"
-    },
-    {
-      "tasks": "hendrycks_ethics",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 2048,
-      "limit": null,
-      "comment": "Hendrycks Ethics - Ethics benchmark"
     },
     {
       "tasks": "aime24_nofigures",
       "completions": true,
       "no_chat_template": true,
-      "limit": null,
+      "limit": 500,
       "comment": "AIME 2024 - Advanced math competition"
     },
     {
       "tasks": "truthfulqa",
       "completions": true,
       "no_chat_template": true,
-      "limit": null,
+      "limit": 500,
       "comment": "TruthfulQA - Truthfulness benchmark"
-    },
-     {
-      "tasks": "realtoxicityprompts",
-      "completions": true,
-      "no_chat_template": true,
-      "limit": null,
-      "comment": "realtoxicitypromps - toxic test generation"
     },
     {
       "tasks": "crows_pairs",
       "completions": true,
       "no_chat_template": true,
-      "limit": null,
+      "limit": 500,
       "comment": "Crows Pairs - Common sense reasoning benchmark"
     },
     {
@@ -73,15 +34,31 @@
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 8192,
-      "limit": 4000,
+      "limit": 500,
       "comment": "OpenAI MATH - Advanced mathematics"
+    },
+    {
+      "tasks": "hendrycks_ethics",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": 500,
+      "comment": "Hendrycks Ethics - Ethics benchmark"
+    },
+    {
+      "tasks": "beavertails",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": 1000,
+      "comment": "BeaverTails - For safety benchmark"
     },
     {
       "tasks": "hendrycks_math",
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 4096,
-      "limit": null,
+      "limit": 500,
       "comment": "MATH dataset - 12K high-quality math problems"
     },
     {
@@ -89,7 +66,7 @@
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 4096,
-      "limit": null,
+      "limit": 500,
       "comment": "Alternative MATH evaluation format"
     },
     {
@@ -97,7 +74,7 @@
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 4096,
-      "limit": null,
+      "limit": 500,
       "comment": "AGIEval - SAT, LSAT, LOGIQA benchmarks"
     },
     {
@@ -105,18 +82,23 @@
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 4096,
-      "limit": null,
+      "limit": 500,
       "comment": "TheoremQA - 720 theorem proving questions"
+    },
+    {
+      "tasks": "realtoxicityprompts",
+      "completions": true,
+      "no_chat_template": true,
+      "limit": 500,
+      "comment": "realtoxicitypromps - toxic test generation"
     },
     {
       "tasks": "mathqa",
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 2048,
-      "limit": 1000,
+      "limit": 500,
       "comment": "MathQA - For comparison, limited sample"
-    },
-
-
+    }
   ]
 }
