@@ -25,7 +25,7 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default="Qwen/Qwen3-4B-Thinking-2507-FP8",
+        default="ArliAI/gpt-oss-20b-Derestricted",
         help="Model name for tokenizer and API requests (default: Qwen/Qwen2.5-32B-Instruct)",
     )
     parser.add_argument(
@@ -52,11 +52,26 @@ def main():
         default=2048,
         help="Max tokens for generation (default: 2048)",
     )
+    parser.add_argument(
+        "--no_chat_template",
+        action="store_true",
+        help="Disable --apply_chat_template (use for non-chat tasks like hellaswag)",
+    )
+    parser.add_argument(
+        "--completions",
+        action="store_true",
+        help="Use /v1/completions endpoint (supports logprobs for hellaswag, arc, etc.) instead of /v1/chat/completions",
+    )
 
     args = parser.parse_args()
 
-    # Build base_url from endpoint (strip trailing slash, append /v1/chat/completions)
-    base_url = args.endpoint.rstrip("/") + "/v1/chat/completions"
+    # Build base_url from endpoint
+    if args.completions:
+        base_url = args.endpoint.rstrip("/") + "/v1/completions"
+        model_type = "local-completions"
+    else:
+        base_url = args.endpoint.rstrip("/") + "/v1/chat/completions"
+        model_type = "local-chat-completions"
 
     # Build model_args with user-provided model and constructed endpoint
     model_args = ",".join([
@@ -69,13 +84,15 @@ def main():
     # Build lm_eval command
     cmd = [
         "lm_eval",
-        "--model", "local-chat-completions",
+        "--model", model_type,
         "--model_args", model_args,
         "--tasks", args.tasks,
-        "--apply_chat_template",
         "--output_path", args.output_path,
         "--log_samples",
     ]
+
+    if not args.no_chat_template:
+        cmd.append("--apply_chat_template")
 
     if args.limit:
         cmd.extend(["--limit", args.limit])
