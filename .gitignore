@@ -36,7 +36,9 @@ cache
 # Ignore SASS config files
 *.pt
 
-*.json
+# Ignore JSON result files but allow config files
+eval_results/**/*.json
+safety_results.json
 
 # Ignore SASS config files
 *.log
@@ -65,3 +67,5 @@ fig
 *visual_test.py
 
 uselesslog
+
+/venv/

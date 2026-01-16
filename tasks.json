@@ -1,0 +1,23 @@
+{
+  "tasks": [
+    {
+      "tasks": "hellaswag",
+      "completions": true,
+      "no_chat_template": true,
+      "limit": "5"
+    },
+    {
+      "tasks": "aime24_nofigures",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 8192,
+      "limit": "5"
+    },
+    {
+      "tasks": "openai_math",
+      "completions": true,
+      "no_chat_template": true,
+      "limit": "5"
+    }
+  ]
+}
