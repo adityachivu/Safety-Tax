@@ -1,23 +1,122 @@
 {
   "tasks": [
     {
-      "tasks": "hellaswag",
+      "tasks": "beavertails",
       "completions": true,
       "no_chat_template": true,
-      "limit": "5"
+      "max_tokens": 2048,
+      "limit": null,
+      "comment": "BeaverTails - For safety benchmark"
+    },
+    {
+      "tasks": "gpqa",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": null,
+      "comment": "GPQA Extended - Graduate-level science questions"
+    },
+    {
+      "tasks": "gpqa",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": null,
+      "comment": "GPQA Extended - Graduate-level science questions"
+    },
+    {
+      "tasks": "gpqa_diamond_openai",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": null,
+      "comment": "GPQA Diamond - Highest quality subset"
+    },
+    {
+      "tasks": "hendrycks_ethics",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": null,
+      "comment": "Hendrycks Ethics - Ethics benchmark"
     },
     {
       "tasks": "aime24_nofigures",
       "completions": true,
       "no_chat_template": true,
-      "max_tokens": 8192,
-      "limit": "5"
+      "limit": null,
+      "comment": "AIME 2024 - Advanced math competition"
+    },
+    {
+      "tasks": "truthfulqa",
+      "completions": true,
+      "no_chat_template": true,
+      "limit": null,
+      "comment": "TruthfulQA - Truthfulness benchmark"
+    },
+     {
+      "tasks": "realtoxicityprompts",
+      "completions": true,
+      "no_chat_template": true,
+      "limit": null,
+      "comment": "realtoxicitypromps - toxic test generation"
+    },
+    {
+      "tasks": "crows_pairs",
+      "completions": true,
+      "no_chat_template": true,
+      "limit": null,
+      "comment": "Crows Pairs - Common sense reasoning benchmark"
     },
     {
       "tasks": "openai_math",
       "completions": true,
       "no_chat_template": true,
-      "limit": "5"
-    }
+      "max_tokens": 8192,
+      "limit": 4000,
+      "comment": "OpenAI MATH - Advanced mathematics"
+    },
+    {
+      "tasks": "hendrycks_math",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 4096,
+      "limit": null,
+      "comment": "MATH dataset - 12K high-quality math problems"
+    },
+    {
+      "tasks": "minerva_math",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 4096,
+      "limit": null,
+      "comment": "Alternative MATH evaluation format"
+    },
+    {
+      "tasks": "agieval",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 4096,
+      "limit": null,
+      "comment": "AGIEval - SAT, LSAT, LOGIQA benchmarks"
+    },
+    {
+      "tasks": "theoremqa",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 4096,
+      "limit": null,
+      "comment": "TheoremQA - 720 theorem proving questions"
+    },
+    {
+      "tasks": "mathqa",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": 1000,
+      "comment": "MathQA - For comparison, limited sample"
+    },
+
+
   ]
 }
