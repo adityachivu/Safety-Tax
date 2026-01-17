@@ -1,20 +1,19 @@
 {
   "tasks": [
     {
-      "tasks": "beavertails",
+      "tasks": "realtoxicityprompts",
       "completions": true,
       "no_chat_template": true,
-      "max_tokens": 2048,
-      "limit": 1000,
-      "comment": "BeaverTails - For safety benchmark"
+      "limit": 500,
+      "comment": "realtoxicitypromps - toxic test generation"
     },
     {
-      "tasks": "openai_math",
+      "tasks": "agieval",
       "completions": true,
       "no_chat_template": true,
-      "max_tokens": 8192,
-      "limit": 500,
-      "comment": "OpenAI MATH - Advanced mathematics"
+      "max_tokens": 4096,
+      "limit": 100,
+      "comment": "AGIEval - SAT, LSAT, LOGIQA benchmarks"
     },
     {
       "tasks": "hendrycks_ethics",
@@ -25,43 +24,12 @@
       "comment": "Hendrycks Ethics - Ethics benchmark"
     },
     {
-      "tasks": "hendrycks_math",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 4096,
-      "limit": 500,
-      "comment": "MATH dataset - 12K high-quality math problems"
-    },
-    {
-      "tasks": "minerva_math",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 4096,
-      "limit": 500,
-      "comment": "Alternative MATH evaluation format"
-    },
-    {
-      "tasks": "agieval",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 4096,
-      "limit": 500,
-      "comment": "AGIEval - SAT, LSAT, LOGIQA benchmarks"
-    },
-    {
       "tasks": "theoremqa",
       "completions": true,
       "no_chat_template": true,
       "max_tokens": 4096,
-      "limit": 500,
+      "limit": 50,
       "comment": "TheoremQA - 720 theorem proving questions"
-    },
-    {
-      "tasks": "realtoxicityprompts",
-      "completions": true,
-      "no_chat_template": true,
-      "limit": 500,
-      "comment": "realtoxicitypromps - toxic test generation"
     },
     {
       "tasks": "mathqa",
