@@ -81,7 +81,7 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default="ArliAI/gpt-oss-20b-Derestricted",
+        default="openai/gpt-oss-20b",
         help="Model name for tokenizer and API requests",
     )
     parser.add_argument(

@@ -1,13 +1,34 @@
 {
   "tasks": [
-    {
-      "tasks": "beavertails",
-      "completions": true,
-      "no_chat_template": true,
-      "max_tokens": 2048,
-      "limit": 1000,
-      "comment": "BeaverTails - For safety benchmark"
-    },
+    // {
+    //   "tasks": "gpqa_diamond_openai",
+    //   "completions": true,
+    //   "no_chat_template": true,
+    //   "max_tokens": 2048,
+    //   "limit": 500,
+    //   "comment": "GPQA Diamond - Highest quality subset"
+    // },
+    // {
+    //   "tasks": "aime24_nofigures",
+    //   "completions": true,
+    //   "no_chat_template": true,
+    //   "limit": 500,
+    //   "comment": "AIME 2024 - Advanced math competition"
+    // },
+    // {
+    //   "tasks": "truthfulqa",
+    //   "completions": true,
+    //   "no_chat_template": true,
+    //   "limit": 500,
+    //   "comment": "TruthfulQA - Truthfulness benchmark"
+    // },
+    // {
+    //   "tasks": "crows_pairs",
+    //   "completions": true,
+    //   "no_chat_template": true,
+    //   "limit": 500,
+    //   "comment": "Crows Pairs - Common sense reasoning benchmark"
+    // },
     {
       "tasks": "openai_math",
       "completions": true,
@@ -23,6 +44,14 @@
       "max_tokens": 2048,
       "limit": 500,
       "comment": "Hendrycks Ethics - Ethics benchmark"
+    },
+    {
+      "tasks": "beavertails",
+      "completions": true,
+      "no_chat_template": true,
+      "max_tokens": 2048,
+      "limit": 1000,
+      "comment": "BeaverTails - For safety benchmark"
     },
     {
       "tasks": "hendrycks_math",
